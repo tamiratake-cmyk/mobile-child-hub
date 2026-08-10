@@ -2,6 +2,8 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/constants/book_config.dart';
+import '../../data/datasources/story_data.dart';
 import '../../data/models/user_progress.dart';
 import '../../services/hive_service.dart';
 
@@ -53,6 +55,13 @@ class EarnBadge extends ProgressEvent {
   List<Object?> get props => [badgeId];
 }
 
+class CompleteGame extends ProgressEvent {
+  final String storyId;
+  const CompleteGame(this.storyId);
+  @override
+  List<Object?> get props => [storyId];
+}
+
 // State
 class ProgressState extends Equatable {
   final UserProgress progress;
@@ -60,6 +69,7 @@ class ProgressState extends Equatable {
   final String? newBadgeEarned;
   final bool leveledUp;
   final int? previousLevel;
+  final bool justUnlockedNext;
   final int updateToken; // Forces rebuilds when mutable state changes
 
   const ProgressState({
@@ -68,6 +78,7 @@ class ProgressState extends Equatable {
     this.newBadgeEarned,
     this.leveledUp = false,
     this.previousLevel,
+    this.justUnlockedNext = false,
     this.updateToken = 0,
   });
 
@@ -77,6 +88,7 @@ class ProgressState extends Equatable {
     String? newBadgeEarned,
     bool? leveledUp,
     int? previousLevel,
+    bool? justUnlockedNext,
   }) {
     return ProgressState(
       progress: progress ?? this.progress,
@@ -84,6 +96,7 @@ class ProgressState extends Equatable {
       newBadgeEarned: newBadgeEarned,
       leveledUp: leveledUp ?? false,
       previousLevel: previousLevel,
+      justUnlockedNext: justUnlockedNext ?? false,
       updateToken: DateTime.now().millisecondsSinceEpoch,
     );
   }
@@ -95,6 +108,7 @@ class ProgressState extends Equatable {
         newBadgeEarned,
         leveledUp,
         previousLevel,
+        justUnlockedNext,
         updateToken,
       ];
 }
@@ -110,6 +124,7 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
     on<ToggleFavorite>(_onToggleFavorite);
     on<UpdateStreak>(_onUpdateStreak);
     on<EarnBadge>(_onEarnBadge);
+    on<CompleteGame>(_onCompleteGame);
   }
 
   Future<void> _onLoadProgress(
@@ -156,16 +171,36 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
     
     progress.recordQuizScore(event.storyId, event.score);
     progress.addPoints(points);
+
+    final justUnlockedNext = progress.passQuizIfEligible(event.storyId, (percentage * 100).round());
+
     await HiveService.saveProgress(progress);
-    
+
     final leveledUp = progress.level > previousLevel;
     emit(state.copyWith(
       progress: progress,
       leveledUp: leveledUp,
       previousLevel: leveledUp ? previousLevel : null,
+      justUnlockedNext: justUnlockedNext,
     ));
-    
+
     // Check for badges
+    _checkBadges(emit);
+  }
+
+  Future<void> _onCompleteGame(
+    CompleteGame event,
+    Emitter<ProgressState> emit,
+  ) async {
+    final progress = state.progress;
+    final alreadyDone = progress.completedGames.contains(event.storyId);
+    if (alreadyDone) return;
+
+    progress.completeGame(event.storyId);
+    progress.addPoints(25);
+    await HiveService.saveProgress(progress);
+    emit(state.copyWith(progress: progress));
+
     _checkBadges(emit);
   }
 
@@ -279,9 +314,44 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
       add(const EarnBadge('points_100'));
     }
     
-    if (progress.totalPoints >= 500 && 
+    if (progress.totalPoints >= 500 &&
         !progress.earnedBadges.contains('points_500')) {
       add(const EarnBadge('points_500'));
+    }
+
+    // Sequence mini-game badges
+    if (progress.completedGames.isNotEmpty &&
+        !progress.earnedBadges.contains('sequence_starter')) {
+      add(const EarnBadge('sequence_starter'));
+    }
+
+    if (progress.completedGames.length >= 10 &&
+        !progress.earnedBadges.contains('sequence_master')) {
+      add(const EarnBadge('sequence_master'));
+    }
+
+    // Testament-completion badges
+    final allStories = StoryData.getAllStories();
+    final oldTestamentIds = allStories
+        .where((s) => BookConfig.byNameEn(s.bookEn)?.testament == Testament.old)
+        .map((s) => s.id)
+        .toSet();
+    final newTestamentIds = allStories
+        .where((s) => BookConfig.byNameEn(s.bookEn)?.testament == Testament.newTestament)
+        .map((s) => s.id)
+        .toSet();
+    final completed = progress.completedStories.toSet();
+
+    if (oldTestamentIds.isNotEmpty &&
+        completed.containsAll(oldTestamentIds) &&
+        !progress.earnedBadges.contains('old_testament_complete')) {
+      add(const EarnBadge('old_testament_complete'));
+    }
+
+    if (newTestamentIds.isNotEmpty &&
+        completed.containsAll(newTestamentIds) &&
+        !progress.earnedBadges.contains('new_testament_complete')) {
+      add(const EarnBadge('new_testament_complete'));
     }
   }
 }

@@ -1,4 +1,6 @@
 import '../models/story.dart';
+import 'story_data_ot2.dart';
+import 'story_data_nt.dart';
 
 class StoryData {
   static List<Story> getAllStories() {
@@ -19,6 +21,10 @@ class StoryData {
       // Numbers Stories
       _twelveSpies(),
       _bronzeSerpent(),
+      // Deuteronomy - Jonah (Phase 2)
+      ...StoryDataOt2.getAll(),
+      // The Gospels (Phase 2)
+      ...StoryDataNt.getAll(),
     ];
   }
 
@@ -55,6 +61,20 @@ God found them and was sad they had disobeyed. They had to leave the beautiful g
 ነገር ግን አንድ ቀን ተንኮለኛ እባብ ሔዋንን የተከለከለውን ፍሬ እንድትበላ አታለላት። ለአዳምም ሰጠችው። ወዲያውኑ አፈሩና ከእግዚአብሔር ተደበቁ።
 
 እግዚአብሔር አገኛቸውና ስላልታዘዙ አዘነ። ከቆንጆው የአትክልት ቦታ መውጣት ነበረባቸው። ነገር ግን እግዚአብሔር አሁንም ይወዳቸው ነበር።''',
+      sequenceEventsEn: const [
+        'God forms Adam from dust and breathes life into him.',
+        'God plants the Garden of Eden for Adam.',
+        'God creates Eve to be Adam\'s helper.',
+        'The serpent tricks Eve into eating the forbidden fruit.',
+        'Adam and Eve are sent out of the garden.',
+      ],
+      sequenceEventsAm: const [
+        'እግዚአብሔር አዳምን ከመሬት አፈር ሠራ ሕይወትንም እፍ አለበት።',
+        'እግዚአብሔር ለአዳም የኤደን ገነትን ተከለ።',
+        'እግዚአብሔር ሔዋንን የአዳም ረዳት አድርጎ ፈጠራት።',
+        'እባቡ ሔዋንን የተከለከለውን ፍሬ እንድትበላ አታለላት።',
+        'አዳምና ሔዋን ከገነት ተላኩ።',
+      ],
     );
   }
 
@@ -97,6 +117,20 @@ When the water went down, a dove brought back an olive branch. Noah knew it was 
 ዝናብ ለ40 ቀንና ለ40 ሌሊት ዘነበ። ውሃ ሁሉንም ሸፈነ! ነገር ግን የኖኅ ቤተሰብ በመርከቡ ውስጥ ደህና ነበሩ።
 
 ውሃው ሲወርድ ርግብ የወይራ ቅርንጫፍ ይዛ ተመለሰች። እግዚአብሔር ደግሞ ምድርን በጎርፍ እንደማያጥለቀልቅ ቃል ኪዳን ሆኖ ቆንጆ ቀስተ ደመና በሰማይ ላይ አደረገ።''',
+      sequenceEventsEn: const [
+        'God tells Noah to build an ark.',
+        'Noah brings two of every animal aboard.',
+        'Rain falls for forty days and forty nights.',
+        'A dove brings back an olive branch.',
+        'God places a rainbow in the sky as a promise.',
+      ],
+      sequenceEventsAm: const [
+        'እግዚአብሔር ኖኅ መርከብ እንዲሠራ ነገረው።',
+        'ኖኅ ከእያንዳንዱ እንስሳ ሁለት ሁለት ወደ መርከቧ አስገባ።',
+        'ለአርባ ቀንና ለአርባ ሌሊት ዝናብ ዘነበ።',
+        'ርግብ የወይራ ቅርንጫፍ ይዛ ተመለሰች።',
+        'እግዚአብሔር እንደ ቃል ኪዳን ቀስተ ደመናን በሰማይ ላይ አደረገ።',
+      ],
     );
   }
 
@@ -133,6 +167,20 @@ Abraham's faith teaches us to trust God even when things seem impossible. God al
 ዓመታት አለፉ፣ አብርሃምና ሳራ አሁንም ልጆች አልነበሯቸውም። ነገር ግን እግዚአብሔር አብርሃምን ቃል ኪዳኑን አስታወሰው።
 
 አብርሃም እግዚአብሔርን አመነ፣ ይህም እግዚአብሔርን በጣም ደስ አሰኘው። አብርሃም 100 ዓመት ሳራም 90 ዓመት ሲሆናቸው እግዚአብሔር ወንድ ልጅ ሰጣቸው! ይስሐቅ ብለው ሰየሙት፣ ትርጉሙም "ሳቅ" ማለት ነው።''',
+      sequenceEventsEn: const [
+        'God calls Abraham to leave his home for a new land.',
+        'Abraham travels to Canaan with Sarah.',
+        'God promises Abraham descendants as many as the stars.',
+        'Abraham believes God\'s promise even though he is old.',
+        'Isaac is born to Abraham and Sarah.',
+      ],
+      sequenceEventsAm: const [
+        'እግዚአብሔር አብርሃም ከቤቱ ወደ አዲስ ምድር እንዲወጣ ጠራው።',
+        'አብርሃም ከሳራ ጋር ወደ ከነዓን ተጓዘ።',
+        'እግዚአብሔር ለአብርሃም እንደ ከዋክብት ብዙ ዘሮችን ተስፋ ገባለት።',
+        'አብርሃም ሽማግሌ ቢሆንም የእግዚአብሔርን ተስፋ አመነ።',
+        'ይስሐቅ ለአብርሃምና ለሳራ ተወለደ።',
+      ],
     );
   }
 
@@ -173,6 +221,20 @@ Joseph said, "You meant it for evil, but God meant it for good!"''',
 እግዚአብሔር ዮሴፍን ሕልሞችን የመተርጎም ችሎታ ሰጠው። ፈርዖን ግራ የሚያጋባ ሕልም ሲኖረው ዮሴፍ ሰባት የብዛት ዓመታት ከዚያም ሰባት የረሃብ ዓመታት እንደሚመጡ ገለጸ። ፈርዖን ዮሴፍን በግብፅ ሁለተኛ ኃያል ሰው አደረገው!
 
 በረሃብ ጊዜ የዮሴፍ ወንድሞች ምግብ ፍለጋ ወደ ግብፅ መጡ። ዮሴፍን አላወቁትም! ነገር ግን ዮሴፍ አወቃቸው። ከመቆጣት ይልቅ ይቅር አላቸውና ቤተሰቡን ሁሉ ወደ ግብፅ አመጣ።''',
+      sequenceEventsEn: const [
+        'Jacob gives Joseph a colorful coat.',
+        'Joseph\'s jealous brothers sell him to traders.',
+        'Joseph rises to power in Egypt by explaining Pharaoh\'s dream.',
+        'Famine brings Joseph\'s brothers to Egypt for food.',
+        'Joseph forgives his brothers and reunites the family.',
+      ],
+      sequenceEventsAm: const [
+        'ያዕቆብ ለዮሴፍ ባለብዙ ቀለም ልብስ ሰጠው።',
+        'ቀናተኞቹ ወንድሞቹ ዮሴፍን ለነጋዴዎች ሸጡት።',
+        'ዮሴፍ የፈርዖንን ሕልም በመተርጎም በግብፅ ሥልጣን ላይ ወጣ።',
+        'ረሃብ ወንድሞቹን ምግብ ፍለጋ ወደ ግብፅ አመጣቸው።',
+        'ዮሴፍ ወንድሞቹን ይቅር አለ ቤተሰቡንም አገናኘ።',
+      ],
     );
   }
 
@@ -215,6 +277,20 @@ Moses obeyed God and went back to Egypt. With God's help, he would lead his peop
 ሙሴ አሁንም ስለመናገር እርግጠኛ አልነበረም። ስለዚህ እግዚአብሔር ወንድሙ አሮን ለፈርዖን እንዲናገር እንደሚረዳው አለ።
 
 ሙሴ እግዚአብሔርን ታዘዘና ወደ ግብፅ ተመለሰ።''',
+      sequenceEventsEn: const [
+        'Moses sees a bush burning but not burning up.',
+        'God speaks to Moses and tells him he is on holy ground.',
+        'God says he has seen his people suffer in Egypt.',
+        'Moses worries he isn\'t the right person for the task.',
+        'Moses obeys and heads back to Egypt.',
+      ],
+      sequenceEventsAm: const [
+        'ሙሴ የሚነድድ ግን የማይቃጠል ቁጥቋጦ አየ።',
+        'እግዚአብሔር ለሙሴ ተናገረ ቅዱስ መሬት ላይ እንደቆመም ነገረው።',
+        'እግዚአብሔር ሕዝቡ በግብፅ እንደሚሠቃዩ እንዳየ ተናገረ።',
+        'ሙሴ ለዚህ ተግባር ትክክለኛው ሰው እንዳልሆነ ተጨነቀ።',
+        'ሙሴ ታዘዘ ወደ ግብፅም ተመለሰ።',
+      ],
     );
   }
 
@@ -251,6 +327,20 @@ This is why Jewish people celebrate Passover - remembering when God's angel pass
 የመጨረሻው መቅሠፍት በጣም አሳዛኝ ነበር። እግዚአብሔር እስራኤላውያን በበራቸው ላይ የበግ ደም እንዲቀቡ ነገራቸው።
 
 በመጨረሻ ፈርዖን ሕዝቡን ለቀቃቸው! እስራኤላውያን ከ430 ዓመታት ባርነት በኋላ ግብፅን ለቀቁ። በመጨረሻ ነጻ ወጡ!''',
+      sequenceEventsEn: const [
+        'Moses asks Pharaoh to let God\'s people go.',
+        'Pharaoh refuses, so God sends plagues one by one.',
+        'The Israelites mark their doors with lamb\'s blood.',
+        'The final plague strikes, and Pharaoh finally agrees.',
+        'The Israelites leave Egypt after 430 years of slavery.',
+      ],
+      sequenceEventsAm: const [
+        'ሙሴ ፈርዖንን የእግዚአብሔርን ሕዝብ እንዲለቅ ጠየቀው።',
+        'ፈርዖን እምቢ አለ እግዚአብሔርም መቅሠፍቶችን አንድ በአንድ ላከ።',
+        'እስራኤላውያን በራቸውን በበግ ደም ምልክት አደረጉ።',
+        'የመጨረሻው መቅሠፍት መታ ፈርዖንም በመጨረሻ ተስማማ።',
+        'እስራኤላውያን ከ430 ዓመታት ባርነት በኋላ ግብፅን ለቀቁ።',
+      ],
     );
   }
 
@@ -291,6 +381,20 @@ God had shown His mighty power to save His people!''',
 ሁሉም እስራኤላውያን በሰላም ተሻገሩ። የፈርዖን ሠራዊት ለመከተል ሲሞክሩ ሙሴ እጁን እንደገና ዘረጋ፣ ውሃውም በወታደሮቹ ላይ ወረደ።
 
 ሕዝቡ በመጨረሻ ደህና ሆኑ! ዘመሩና ዘፈኑ፣ እግዚአብሔርን ላስደናቂው ተአምር አመሰገኑ።''',
+      sequenceEventsEn: const [
+        'Pharaoh\'s army chases the Israelites to the Red Sea.',
+        'The people are trapped between the sea and the army.',
+        'Moses stretches his staff and the sea parts.',
+        'Israel crosses safely on dry ground.',
+        'The sea closes over Pharaoh\'s army, and Israel celebrates.',
+      ],
+      sequenceEventsAm: const [
+        'የፈርዖን ሠራዊት እስራኤላውያንን እስከ ቀይ ባሕር ድረስ ተከተላቸው።',
+        'ሕዝቡ በባሕሩና በሠራዊቱ መካከል ተያዙ።',
+        'ሙሴ በትሩን ዘረጋ ባሕሩም ተከፈለ።',
+        'እስራኤል በደረቅ መሬት ላይ በደህና ተሻገሩ።',
+        'ባሕሩ በፈርዖን ሠራዊት ላይ ተዘጋ እስራኤልም አከበሩ።',
+      ],
     );
   }
 
@@ -329,6 +433,20 @@ The Ten Commandments showed people how to love God and treat others with kindnes
 እግዚአብሔርን ከሁሉ በላይ ውደድ። ጣዖታትን አታምልክ። የእግዚአብሔርን ስም አክብር። በሰንበት ዕረፍ። ወላጆችህን አክብር። ሌሎችን አትጉዳ። በጋብቻ ታማኝ ሁን። አትስረቅ። አትዋሽ። አትቅና።
 
 ሙሴ ሲወርድ ከእግዚአብሔር ቅርበት የተነሳ ፊቱ በብርሃን ያበራ ነበር!''',
+      sequenceEventsEn: const [
+        'Israel camps at Mount Sinai as it shakes with smoke and fire.',
+        'Moses climbs the mountain to meet with God.',
+        'Moses stays forty days and forty nights without food.',
+        'God writes the Ten Commandments on stone tablets.',
+        'Moses comes down with his face glowing.',
+      ],
+      sequenceEventsAm: const [
+        'እስራኤል በጭስና በእሳት እየተናወጠ በሲና ተራራ ሠፈረ።',
+        'ሙሴ ከእግዚአብሔር ጋር ለመገናኘት ተራራውን ወጣ።',
+        'ሙሴ ያለ ምግብ ለአርባ ቀንና ለአርባ ሌሊት ቆየ።',
+        'እግዚአብሔር አሥርቱን ትእዛዛት በድንጋይ ጽላቶች ላይ ጻፈ።',
+        'ሙሴ ፊቱ እያበራ ወረደ።',
+      ],
     );
   }
 
@@ -369,6 +487,20 @@ Aaron's job was to help people understand God's forgiveness and love. He showed 
 አሮን ለሰባት ቀናት በድንኳኑ ቆየ ሥራውን እየተማረ። በስምንተኛው ቀን የመጀመሪያ መሥዋዕቱን አቀረበ።
 
 አስደናቂ ነገር ሆነ! እሳት ከእግዚአብሔር ዘንድ መጣና መሥዋዕቱን በላ! ሕዝቡ ይህን ሲያዩ በግንባራቸው ወድቀው እግዚአብሔርን አመሰገኑ።''',
+      sequenceEventsEn: const [
+        'God chooses Aaron to be the first High Priest.',
+        'God gives Aaron special priestly garments.',
+        'Moses washes and anoints Aaron and his sons.',
+        'Aaron spends seven days learning his duties.',
+        'Fire from God consumes Aaron\'s first sacrifice.',
+      ],
+      sequenceEventsAm: const [
+        'እግዚአብሔር አሮንን የመጀመሪያው ሊቀ ካህን አድርጎ መረጠው።',
+        'እግዚአብሔር ለአሮን ልዩ የክህነት ልብሶችን ሰጠው።',
+        'ሙሴ አሮንንና ልጆቹን አጠበና ቀባ።',
+        'አሮን ለሰባት ቀናት ተግባሩን ተማረ።',
+        'ከእግዚአብሔር የመጣ እሳት የአሮንን የመጀመሪያ መሥዋዕት በላ።',
+      ],
     );
   }
 
@@ -405,6 +537,20 @@ This special day taught Israel that sin is serious, but God provides a way to be
 አሮን እጆቹን በፍየሉ ራስ ላይ አድርጎ የሕዝቡን ኃጢአት ሁሉ ተናዘዘ። ከዚያም ፍየሉ ኃጢአቱን ይዞ ወደ ምድረ በዳ ሩቅ ተላከ!
 
 ይህ ልዩ ቀን እስራኤልን ኃጢአት ከባድ መሆኑን፣ ነገር ግን እግዚአብሔር ይቅርታ የሚደረግበትን መንገድ እንደሚሰጥ አስተማረ።''',
+      sequenceEventsEn: const [
+        'Aaron bathes and wears simple white clothes.',
+        'Aaron offers a sacrifice for his own sins first.',
+        'Aaron confesses the people\'s sins over the scapegoat.',
+        'The scapegoat is sent away into the wilderness.',
+        'Aaron enters the Most Holy Place to cover the people\'s sins.',
+      ],
+      sequenceEventsAm: const [
+        'አሮን ታጠበ ቀላል ነጭ ልብስም ለበሰ።',
+        'አሮን መጀመሪያ ለራሱ ኃጢአት መሥዋዕት አቀረበ።',
+        'አሮን የሕዝቡን ኃጢአት በፍየሉ ላይ ተናዘዘ።',
+        'ፍየሉ ኃጢአቱን ይዞ ወደ ምድረ በዳ ተላከ።',
+        'አሮን የሕዝቡን ኃጢአት ለመሸፈን ወደ ቅድስተ ቅዱሳን ገባ።',
+      ],
     );
   }
 
@@ -445,6 +591,20 @@ This story teaches us to trust God's promises, even when things look scary. With
 በሚያሳዝን ሁኔታ ሕዝቡ አሥሩን የፈሩ ሰላዮች አመኑ። አለቀሱና ወደ ግብፅ መመለስ ፈለጉ።
 
 እግዚአብሔርን ስላላመኑ ሕዝቡ ለአርባ ዓመታት በምድረ በዳ መዘዋወር ነበረባቸው። ነገር ግን ታማኞቹ ኢያሱና ካሌብ አንድ ቀን ወደ ተስፋይቱ ምድር ይገባሉ።''',
+      sequenceEventsEn: const [
+        'Moses sends twelve spies into the Promised Land.',
+        'The spies explore for forty days and find good fruit.',
+        'Ten spies bring back a frightening report.',
+        'Joshua and Caleb urge the people to trust God.',
+        'The people believe the fearful report and must wander forty years.',
+      ],
+      sequenceEventsAm: const [
+        'ሙሴ አሥራ ሁለት ሰላዮችን ወደ ተስፋይቱ ምድር ላከ።',
+        'ሰላዮቹ ለአርባ ቀናት አሰሱ ጥሩ ፍሬም አገኙ።',
+        'አሥሩ ሰላዮች አስፈሪ ዘገባ አመጡ።',
+        'ኢያሱና ካሌብ ሕዝቡ እግዚአብሔርን እንዲያምኑ አጥብቀው ጠየቁ።',
+        'ሕዝቡ አስፈሪውን ዘገባ አመኑ ለአርባ ዓመታትም መዘዋወር ነበረባቸው።',
+      ],
     );
   }
 
@@ -487,6 +647,20 @@ Many years later, Jesus said He would be lifted up like that snake. Anyone who l
 ሙሴ ታዘዘ። የነሐስ እባብ ሠርቶ ከፍ አደረገ። የታመሙ ሰዎች በምሰሶው ላይ ያለውን እባብ ሲመለከቱ ተፈውሰዋል!
 
 ከብዙ ዓመታት በኋላ ኢየሱስ እንደዚያ እባብ ከፍ እንደሚደረግ ተናገረ። በእምነት ወደ እርሱ የሚመለከት ሁሉ ይድናልና የዘላለም ሕይወት ይኖረዋል!''',
+      sequenceEventsEn: const [
+        'The people complain about the manna God provides.',
+        'God sends poisonous snakes because of their grumbling.',
+        'The people admit their sin and ask Moses to pray.',
+        'God tells Moses to make a bronze snake on a pole.',
+        'Anyone who looks at the bronze snake is healed.',
+      ],
+      sequenceEventsAm: const [
+        'ሕዝቡ እግዚአብሔር ስለሚሰጣቸው ማና አጉረመረሙ።',
+        'እግዚአብሔር በማጉረምረማቸው ምክንያት መርዛማ እባቦችን ላከ።',
+        'ሕዝቡ ኃጢአታቸውን አምነው ሙሴ እንዲጸልይ ጠየቁ።',
+        'እግዚአብሔር ሙሴን የነሐስ እባብ በምሰሶ ላይ እንዲሠራ ነገረው።',
+        'የነሐስ እባቡን የተመለከተ ሁሉ ተፈወሰ።',
+      ],
     );
   }
 }

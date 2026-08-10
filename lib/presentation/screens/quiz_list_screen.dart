@@ -1,4 +1,5 @@
 import 'package:bible_stories/core/theme/app_theme.dart';
+import 'package:bible_stories/presentation/blocs/progress_bloc.dart';
 import 'package:bible_stories/presentation/blocs/settings_bloc.dart';
 import 'package:bible_stories/presentation/blocs/stories_bloc.dart';
 import 'package:bible_stories/presentation/screens/story_list_screen.dart';
@@ -60,9 +61,10 @@ class QuizList extends StatelessWidget {
             SliverToBoxAdapter(child:  SizedBox(height: 20)),
             BlocBuilder<StoriesBloc, StoriesState>(
                 builder: (context, state){
-                  final quizzes =  state.allStories
-                  .where((s) => s.bookEn == bookEn || s.bookAm == bookAm)
-                  .toList();
+                  final quizzes = state.allStories
+                      .where((s) => s.bookEn == bookEn || s.bookAm == bookAm)
+                      .toList()
+                    ..sort((a, b) => a.order.compareTo(b.order));
 
                   if (quizzes.isEmpty){
                     return SliverToBoxAdapter(
@@ -73,17 +75,22 @@ class QuizList extends StatelessWidget {
                         ));
                   }
 
+                  final progress = context.watch<ProgressBloc>().state.progress;
+
                   return SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     sliver: SliverList(
                        delegate: SliverChildBuilderDelegate(
                         (context, index) {
                           final quiz = quizzes[index];
+                          final isLocked = index > 0 &&
+                              !progress.hasPassedQuiz(quizzes[index - 1].id);
                           return StoryCard(
                             story: quiz,
                             isquiz: true,
                             index: index,
-                            color: AppTheme.primaryColor,
+                            color: AppTheme.getBookColor(bookEn),
+                            isLocked: isLocked,
                           );
                         },
                         childCount: quizzes.length,

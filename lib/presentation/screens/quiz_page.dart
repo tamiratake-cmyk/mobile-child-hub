@@ -1,3 +1,4 @@
+import 'package:bible_stories/core/constants/book_config.dart';
 import 'package:bible_stories/core/theme/app_theme.dart';
 import 'package:bible_stories/presentation/blocs/settings_bloc.dart';
 import 'package:bible_stories/presentation/blocs/stories_bloc.dart';
@@ -43,13 +44,16 @@ class QuizPage extends StatelessWidget {
 
               SliverToBoxAdapter(child: const SizedBox(height: 20)),
              
-             BlocBuilder<StoriesBloc,StoriesState>( 
-              builder: (context, state){ 
+             BlocBuilder<StoriesBloc,StoriesState>(
+              builder: (context, state){
                  if (state.isLoading) {
                 return const SliverToBoxAdapter(
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
+              final present = state.allStories.map((s) => s.bookEn).toSet();
+              final books = BookConfig.ordered.where((b) => present.contains(b.nameEn)).toList();
+
               return SliverPadding(
                 padding:  const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 sliver: SliverGrid(
@@ -59,40 +63,26 @@ class QuizPage extends StatelessWidget {
                     crossAxisSpacing: 16,
                     childAspectRatio: 3 / 2,
                   ),
-                  delegate: SliverChildListDelegate(
-                    [
-                      _BookCard(
-                        titleEn: 'Genesis',
-                        titleAm: 'ዘፍጥረት',
-                        icon: Icons.wb_sunny_rounded,
-                        color: AppTheme.genesisColor,
-                        storyCount: _getStoryCount(state.allStories, 'Genesis'),
-                        delay: 0,
-                      ),
-                      _BookCard(
-                        titleEn: 'Exodus',
-                        titleAm: 'ዘጸአት',
-                        icon: Icons.directions_walk_rounded,
-                        color: AppTheme.exodusColor,
-                        storyCount: _getStoryCount(state.allStories, 'Exodus'),
-                        delay: 100,
-                      ),
-                      _BookCard(
-                        titleEn: 'Leviticus',
-                        titleAm: 'ዘሌዋውያን',
-                        icon: Icons.local_fire_department_rounded,
-                        color: AppTheme.leviticusColor,
-                        storyCount: _getStoryCount(state.allStories, 'Leviticus'),
-                        delay: 200,
-                      ),
-                    ],
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final book = books[index];
+                      return _BookCard(
+                        titleEn: book.nameEn,
+                        titleAm: book.nameAm,
+                        icon: book.icon,
+                        color: book.color,
+                        storyCount: _getStoryCount(state.allStories, book.nameEn),
+                        delay: index * 80,
+                      );
+                    },
+                    childCount: books.length,
                   ),
                 ),
 
               );
               }
              )
-              
+
 
               // Add your quiz content here
 
@@ -152,7 +142,7 @@ class _BookCard extends StatelessWidget {
               ),
               const Spacer(),
               Text(
-                '$storyCount ${isAm ? "" : "Quizzes"}',
+                isAm ? '$storyCount መጠየቂያዎች' : '$storyCount Quizzes',
                 style: theme.textTheme.bodySmall?.copyWith(color: Colors.white70),
               ),
             ],

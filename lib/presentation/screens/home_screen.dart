@@ -4,6 +4,7 @@ import 'package:bible_stories/presentation/screens/quiz_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../core/constants/book_config.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/story.dart';
 import '../blocs/settings_bloc.dart';
@@ -330,18 +331,7 @@ class _HomeContent extends StatelessWidget {
           //     );
           //   },
           // ),
-          // Book Categories
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Text(
-                isAm ? 'መጻሕፍት' : 'Books',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          // Book Grid
+          // Books, grouped by testament
           BlocBuilder<StoriesBloc, StoriesState>(
             builder: (context, state) {
               if (state.isLoading) {
@@ -349,49 +339,39 @@ class _HomeContent extends StatelessWidget {
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: SliverGrid(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 16,
-                    childAspectRatio: 0.85,
+              final present = state.allStories.map((s) => s.bookEn).toSet();
+              final oldTestament = BookConfig.ordered
+                  .where((b) => b.testament == Testament.old && present.contains(b.nameEn))
+                  .toList();
+              final newTestament = BookConfig.ordered
+                  .where((b) => b.testament == Testament.newTestament && present.contains(b.nameEn))
+                  .toList();
+
+              return SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (oldTestament.isNotEmpty) ...[
+                        Text(
+                          isAm ? 'ብሉይ ኪዳን' : 'Old Testament',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        _BookGrid(books: oldTestament, allStories: state.allStories, isAm: isAm),
+                        const SizedBox(height: 32),
+                      ],
+                      if (newTestament.isNotEmpty) ...[
+                        Text(
+                          isAm ? 'አዲስ ኪዳን' : 'New Testament',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        _BookGrid(books: newTestament, allStories: state.allStories, isAm: isAm),
+                      ],
+                    ],
                   ),
-                  delegate: SliverChildListDelegate([
-                    _BookCard(
-                      titleEn: 'Genesis',
-                      titleAm: 'ዘፍጥረት',
-                      icon: Icons.wb_sunny_rounded,
-                      color: AppTheme.genesisColor,
-                      storyCount: _getStoryCount(state.allStories, 'Genesis'),
-                      delay: 0,
-                    ),
-                    _BookCard(
-                      titleEn: 'Exodus',
-                      titleAm: 'ዘጸአት',
-                      icon: Icons.directions_walk_rounded,
-                      color: AppTheme.exodusColor,
-                      storyCount: _getStoryCount(state.allStories, 'Exodus'),
-                      delay: 100,
-                    ),
-                    _BookCard(
-                      titleEn: 'Leviticus',
-                      titleAm: 'ዘሌዋውያን',
-                      icon: Icons.local_fire_department_rounded,
-                      color: AppTheme.leviticusColor,
-                      storyCount: _getStoryCount(state.allStories, 'Leviticus'),
-                      delay: 200,
-                    ),
-                    _BookCard(
-                      titleEn: 'Numbers',
-                      titleAm: 'ዘኍልቍ',
-                      icon: Icons.format_list_numbered_rounded,
-                      color: AppTheme.numbersColor,
-                      storyCount: _getStoryCount(state.allStories, 'Numbers'),
-                      delay: 300,
-                    ),
-                  ]),
                 ),
               );
             },
@@ -405,10 +385,6 @@ class _HomeContent extends StatelessWidget {
     )
     );
 
-  }
-
-  int _getStoryCount(List<Story> stories, String book) {
-    return stories.where((s) => s.bookEn == book).length;
   }
 
   Widget _buildStreakBadge(BuildContext context) {
@@ -449,19 +425,45 @@ class _HomeContent extends StatelessWidget {
   }
 }
 
+class _BookGrid extends StatelessWidget {
+  final List<BookInfo> books;
+  final List<Story> allStories;
+  final bool isAm;
+
+  const _BookGrid({
+    required this.books,
+    required this.allStories,
+    required this.isAm,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 16,
+        crossAxisSpacing: 16,
+        childAspectRatio: 0.85,
+      ),
+      itemCount: books.length,
+      itemBuilder: (context, index) {
+        final book = books[index];
+        final storyCount = allStories.where((s) => s.bookEn == book.nameEn).length;
+        return _BookCard(book: book, storyCount: storyCount, delay: index * 80);
+      },
+    );
+  }
+}
+
 class _BookCard extends StatelessWidget {
-  final String titleEn;
-  final String titleAm;
-  final IconData icon;
-  final Color color;
+  final BookInfo book;
   final int storyCount;
   final int delay;
 
   const _BookCard({
-    required this.titleEn,
-    required this.titleAm,
-    required this.icon,
-    required this.color,
+    required this.book,
     required this.storyCount,
     required this.delay,
   });
@@ -470,28 +472,28 @@ class _BookCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsBloc>().state;
     final isAm = settings.languageCode == 'am';
-    final title = isAm ? titleAm : titleEn;
+    final title = isAm ? book.nameAm : book.nameEn;
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => StoryListScreen(bookEn: titleEn, bookAm: titleAm),
+            builder: (_) => StoryListScreen(bookEn: book.nameEn, bookAm: book.nameAm),
           ),
         );
       },
       child: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [color, color.withValues(alpha: 0.7)],
+            colors: [book.color, book.color.withValues(alpha: 0.7)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(24),
           boxShadow: [
             BoxShadow(
-              color: color.withValues(alpha: 0.4),
+              color: book.color.withValues(alpha: 0.4),
               blurRadius: 15,
               offset: const Offset(0, 8),
             ),
@@ -504,7 +506,7 @@ class _BookCard extends StatelessWidget {
               right: -20,
               bottom: -20,
               child: Icon(
-                icon,
+                book.icon,
                 size: 100,
                 color: Colors.white.withValues(alpha: 0.2),
               ),
@@ -521,7 +523,7 @@ class _BookCard extends StatelessWidget {
                       color: Colors.white.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Icon(icon, color: Colors.white, size: 28),
+                    child: Icon(book.icon, color: Colors.white, size: 28),
                   ),
                   const Spacer(),
                   Text(

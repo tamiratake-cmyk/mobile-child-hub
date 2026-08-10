@@ -6,6 +6,7 @@ import '../../data/models/story.dart';
 import '../../services/tts_service.dart';
 import '../blocs/settings_bloc.dart';
 import '../blocs/progress_bloc.dart';
+import '../widgets/story_scene.dart';
 import 'quiz_screen.dart';
 
 class StoryReaderScreen extends StatefulWidget {
@@ -72,32 +73,10 @@ class _StoryReaderScreenState extends State<StoryReaderScreen> {
                   fontSize: 18,
                 ),
               ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [color, color.withValues(alpha: 0.7)],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  ),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 40),
-                    Container(
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.auto_stories_rounded,
-                        size: 50,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
+              background: StoryScene(
+                bookEn: widget.story.bookEn,
+                storyId: widget.story.id,
+                borderRadius: BorderRadius.zero,
               ),
             ),
           ),

@@ -4,9 +4,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_theme.dart';
 import '../../data/models/story.dart';
+import '../../data/models/user_progress.dart';
 import '../blocs/settings_bloc.dart';
 import '../blocs/stories_bloc.dart';
 import '../blocs/progress_bloc.dart';
+import '../widgets/story_scene.dart';
 import 'story_reader_screen.dart';
 
 class StoryListScreen extends StatelessWidget {
@@ -89,17 +91,22 @@ class StoryListScreen extends StatelessWidget {
                 );
               }
 
+              final progress = context.watch<ProgressBloc>().state.progress;
+
               return SliverPadding(
                 padding: const EdgeInsets.all(16),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final story = stories[index];
+                      final isLocked = index > 0 &&
+                          !progress.hasPassedQuiz(stories[index - 1].id);
                       return StoryCard(
                         story: story,
                         index: index,
                         isquiz: false,
                         color: color,
+                        isLocked: isLocked,
                       );
                     },
                     childCount: stories.length,
@@ -134,6 +141,7 @@ class StoryCard extends StatelessWidget {
   final int index;
   final Color color;
   final bool isquiz;
+  final bool isLocked;
 
   const StoryCard({
     super.key,
@@ -141,113 +149,136 @@ class StoryCard extends StatelessWidget {
     required this.index,
     required this.isquiz,
     required this.color,
+    this.isLocked = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsBloc>().state;
+    final isAm = settings.languageCode == 'am';
     final progress = context.watch<ProgressBloc>().state.progress;
     final isCompleted = progress.completedStories.contains(story.id);
+    final passed = progress.hasPassedQuiz(story.id);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_){
-                return isquiz ? QuizScreen(story: story) : StoryReaderScreen(story: story);
+        onTap: isLocked
+            ? () => _showLockedMessage(context, isAm)
+            : () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) {
+                      return isquiz ? QuizScreen(story: story) : StoryReaderScreen(story: story);
+                    },
+                  ),
+                );
               },
+        child: Opacity(
+          opacity: isLocked ? 0.55 : 1.0,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          );
-        },
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.05),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              // Story Number
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [color, color.withValues(alpha: 0.7)],
-                  ),
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Center(
-                  child: Text(
-                    '${index + 1}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              // Story Info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      story.getTitle(settings.languageCode),
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+            child: Row(
+              children: [
+                // Story Scene thumbnail (or lock icon)
+                SizedBox(
+                  width: 54,
+                  height: 54,
+                  child: isLocked
+                      ? Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.withValues(alpha: 0.25),
+                            borderRadius: BorderRadius.circular(15),
                           ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      story.getSummary(settings.languageCode),
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.color
-                                ?.withValues(alpha: 0.7),
-                          ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+                          child: const Icon(Icons.lock_rounded, color: Colors.white, size: 24),
+                        )
+                      : StoryScene(
+                          bookEn: story.bookEn,
+                          storyId: story.id,
+                          compact: true,
+                          borderRadius: BorderRadius.circular(15),
+                        ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              // Completion Status
-              if (isCompleted)
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.successColor.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
+                const SizedBox(width: 16),
+                // Story Info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        story.getTitle(settings.languageCode),
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        isLocked
+                            ? (isAm ? 'ቀዳሚውን ፈተና ካለፉ በኋላ ይከፈታል' : 'Unlocks after the previous quiz')
+                            : story.getSummary(settings.languageCode),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.color
+                                  ?.withValues(alpha: 0.7),
+                            ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.check_rounded,
-                    color: AppTheme.successColor,
-                    size: 20,
-                  ),
-                )
-              else
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  color: color,
-                  size: 18,
                 ),
-            ],
+                const SizedBox(width: 8),
+                // Status
+                if (isLocked)
+                  const Icon(Icons.lock_rounded, color: Colors.grey, size: 20)
+                else if (isquiz && passed)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.goldColor.withValues(alpha: 0.15),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.emoji_events_rounded,
+                      color: AppTheme.goldColor,
+                      size: 20,
+                    ),
+                  )
+                else if (!isquiz && isCompleted)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.successColor.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: AppTheme.successColor,
+                      size: 20,
+                    ),
+                  )
+                else
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    color: color,
+                    size: 18,
+                  ),
+              ],
+            ),
           ),
         ),
       ),
@@ -255,5 +286,18 @@ class StoryCard extends StatelessWidget {
           begin: 0.1,
           delay: Duration(milliseconds: index * 100),
         );
+  }
+
+  void _showLockedMessage(BuildContext context, bool isAm) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          isAm
+              ? 'ይህን ለመክፈት ቀዳሚውን ታሪክ ፈተና በ${UserProgress.passThresholdPercent}% ወይም ከዚያ በላይ ማለፍ አለብዎት።'
+              : 'Pass the previous story\'s quiz with ${UserProgress.passThresholdPercent}% or higher to unlock this.',
+        ),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 }

@@ -43,7 +43,7 @@ class SettingsState extends Equatable {
   final bool isLoading;
 
   const SettingsState({
-    this.languageCode = 'en',
+    this.languageCode = 'am',
     this.isDarkMode = false,
     this.isSoundEnabled = true,
     this.isTTSEnabled = true,

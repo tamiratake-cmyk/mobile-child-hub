@@ -2,6 +2,7 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../core/constants/book_config.dart';
 import '../../data/models/story.dart';
 import '../../services/hive_service.dart';
 import '../../data/datasources/story_data.dart';
@@ -65,13 +66,13 @@ class StoriesState extends Equatable {
     );
   }
 
+  /// Books that currently have at least one story, in canonical Bible order.
   List<String> get uniqueBooks {
-    final books = allStories.map((s) => s.bookEn).toSet().toList();
-    books.sort((a, b) {
-      final order = ['Genesis', 'Exodus', 'Leviticus', 'Numbers'];
-      return order.indexOf(a).compareTo(order.indexOf(b));
-    });
-    return books;
+    final present = allStories.map((s) => s.bookEn).toSet();
+    return BookConfig.ordered
+        .map((b) => b.nameEn)
+        .where(present.contains)
+        .toList();
   }
 
   @override
@@ -102,15 +103,18 @@ class StoriesBloc extends Bloc<StoriesEvent, StoriesState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      // Check if stories exist in Hive
+      // Check if stories exist in Hive, and whether the cached content is
+      // stale (bundled story/quiz data changed since it was last seeded).
       var stories = HiveService.getAllStories();
+      final isStale = HiveService.getContentVersion() != HiveService.currentContentVersion;
 
-      if (stories.isEmpty) {
-        // Initialize with default stories
+      if (stories.isEmpty || isStale) {
+        await HiveService.clearStoriesAndQuizzes();
         stories = StoryData.getAllStories();
         for (final story in stories) {
           await HiveService.saveStory(story);
         }
+        await HiveService.setContentVersion(HiveService.currentContentVersion);
       }
 
       emit(state.copyWith(

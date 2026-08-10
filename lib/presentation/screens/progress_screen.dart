@@ -302,6 +302,12 @@ class _BadgesGrid extends StatelessWidget {
     {'id': 'streak_3', 'icon': Icons.local_fire_department, 'nameEn': '3 Day Streak', 'nameAm': '3 ቀን ተከታታይ'},
     {'id': 'streak_7', 'icon': Icons.whatshot, 'nameEn': '7 Day Streak', 'nameAm': '7 ቀን ተከታታይ'},
     {'id': 'streak_30', 'icon': Icons.military_tech, 'nameEn': '30 Day Streak', 'nameAm': '30 ቀን ተከታታይ'},
+    {'id': 'sequence_starter', 'icon': Icons.timeline_rounded, 'nameEn': 'Game Starter', 'nameAm': 'ጨዋታ ጀማሪ'},
+    {'id': 'sequence_master', 'icon': Icons.extension_rounded, 'nameEn': 'Puzzle Master', 'nameAm': 'እንቆቅልሽ ጌታ'},
+    {'id': 'points_100', 'icon': Icons.toll_rounded, 'nameEn': '100 Points', 'nameAm': '100 ነጥቦች'},
+    {'id': 'points_500', 'icon': Icons.diamond_rounded, 'nameEn': '500 Points', 'nameAm': '500 ነጥቦች'},
+    {'id': 'old_testament_complete', 'icon': Icons.menu_book_rounded, 'nameEn': 'Old Testament Hero', 'nameAm': 'የብሉይ ኪዳን ጀግና'},
+    {'id': 'new_testament_complete', 'icon': Icons.auto_awesome_rounded, 'nameEn': 'New Testament Hero', 'nameAm': 'የአዲስ ኪዳን ጀግና'},
   ];
 
   @override

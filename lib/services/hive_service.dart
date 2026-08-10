@@ -13,6 +13,12 @@ class HiveService {
   static const String badgesBox = 'badges';
   static const String settingsBox = 'settings';
 
+  /// Bump whenever the bundled story/quiz content in [StoryData]/[QuizData]
+  /// changes. On mismatch, StoriesBloc clears and reseeds the stories and
+  /// quizzes boxes so existing installs pick up the new content instead of
+  /// keeping whatever was cached the first time the app ever ran.
+  static const int currentContentVersion = 2;
+
   static Future<void> init() async {
     await Hive.initFlutter();
 
@@ -37,6 +43,19 @@ class HiveService {
 
   static Future<void> saveStory(Story story) async {
     await stories.put(story.id, story);
+  }
+
+  static Future<void> clearStoriesAndQuizzes() async {
+    await stories.clear();
+    await quizzes.clear();
+  }
+
+  static int getContentVersion() {
+    return settings.get('contentVersion', defaultValue: 0);
+  }
+
+  static Future<void> setContentVersion(int version) async {
+    await settings.put('contentVersion', version);
   }
 
   static List<Story> getAllStories() {
@@ -109,7 +128,9 @@ class HiveService {
   static Box get settings => Hive.box(settingsBox);
 
   static String getLanguage() {
-    return settings.get('language', defaultValue: 'en');
+    // Amharic is the app's default language; users can switch to English
+    // any time from Settings.
+    return settings.get('language', defaultValue: 'am');
   }
 
   static Future<void> setLanguage(String locale) async {

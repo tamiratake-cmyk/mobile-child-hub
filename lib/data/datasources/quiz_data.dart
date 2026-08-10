@@ -1,7 +1,12 @@
 import '../models/quiz.dart';
+import 'quiz_data_ot2.dart';
+import 'quiz_data_nt.dart';
 
 class QuizData {
   static List<Quiz> getQuizzesForStory(String storyId) {
+    final phase2 = QuizDataOt2.getQuizzesForStory(storyId) ?? QuizDataNt.getQuizzesForStory(storyId);
+    if (phase2 != null) return phase2;
+
     switch (storyId) {
       case 'adam_eve':
         return _adamEveQuizzes();

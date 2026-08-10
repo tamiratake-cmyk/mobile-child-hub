@@ -30,13 +30,15 @@ class StoryAdapter extends TypeAdapter<Story> {
       verseReferences: (fields[10] as List).cast<String>(),
       summaryEn: fields[11] as String,
       summaryAm: fields[12] as String,
+      sequenceEventsEn: (fields[13] as List).cast<String>(),
+      sequenceEventsAm: (fields[14] as List).cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Story obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(15)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -62,7 +64,11 @@ class StoryAdapter extends TypeAdapter<Story> {
       ..writeByte(11)
       ..write(obj.summaryEn)
       ..writeByte(12)
-      ..write(obj.summaryAm);
+      ..write(obj.summaryAm)
+      ..writeByte(13)
+      ..write(obj.sequenceEventsEn)
+      ..writeByte(14)
+      ..write(obj.sequenceEventsAm);
   }
 
   @override

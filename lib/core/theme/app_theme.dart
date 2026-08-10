@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../constants/book_config.dart';
 
 class AppTheme {
   // Primary Colors - Vibrant and child-friendly
@@ -51,7 +52,6 @@ class AppTheme {
 
   static ThemeData lightTheme(String languageCode) {
     final isAmharic = languageCode == 'am';
-    final fontFamily = isAmharic ? 'NotoSansEthiopic' : null;
 
     return ThemeData(
       useMaterial3: true,
@@ -65,16 +65,14 @@ class AppTheme {
         surface: surfaceLight,
         error: errorColor,
       ),
-      textTheme: isAmharic
-          ? _buildAmharicTextTheme(Brightness.light)
-          : _buildTextTheme(Brightness.light),
+      textTheme: _buildTextTheme(Brightness.light, isAmharic),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         systemOverlayStyle: systemUiOverlayStyleFor(Brightness.light),
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontFamily: fontFamily,
+        titleTextStyle: _font(
+          isAmharic,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: textPrimaryLight,
@@ -99,11 +97,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          textStyle: TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          textStyle: _font(isAmharic, fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -117,17 +111,14 @@ class AppTheme {
         unselectedItemColor: textSecondaryLight,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: TextStyle(
-          fontFamily: fontFamily,
-          fontWeight: FontWeight.bold,
-        ),
+        selectedLabelStyle: _font(isAmharic, fontSize: 12, fontWeight: FontWeight.bold),
+        unselectedLabelStyle: _font(isAmharic, fontSize: 12),
       ),
     );
   }
 
   static ThemeData darkTheme(String languageCode) {
     final isAmharic = languageCode == 'am';
-    final fontFamily = isAmharic ? 'NotoSansEthiopic' : null;
 
     return ThemeData(
       useMaterial3: true,
@@ -141,16 +132,14 @@ class AppTheme {
         surface: surfaceDark,
         error: errorColor,
       ),
-      textTheme: isAmharic
-          ? _buildAmharicTextTheme(Brightness.dark)
-          : _buildTextTheme(Brightness.dark),
+      textTheme: _buildTextTheme(Brightness.dark, isAmharic),
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         systemOverlayStyle: systemUiOverlayStyleFor(Brightness.dark),
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: TextStyle(
-          fontFamily: fontFamily,
+        titleTextStyle: _font(
+          isAmharic,
           fontSize: 20,
           fontWeight: FontWeight.bold,
           color: textPrimaryDark,
@@ -175,11 +164,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
-          textStyle: TextStyle(
-            fontFamily: fontFamily,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+          textStyle: _font(isAmharic, fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -193,132 +178,58 @@ class AppTheme {
         unselectedItemColor: textSecondaryDark,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
-        selectedLabelStyle: TextStyle(
-          fontFamily: fontFamily,
-          fontWeight: FontWeight.bold,
-        ),
+        selectedLabelStyle: _font(isAmharic, fontSize: 12, fontWeight: FontWeight.bold),
+        unselectedLabelStyle: _font(isAmharic, fontSize: 12),
       ),
     );
   }
 
-  static TextTheme _buildTextTheme(Brightness brightness) {
-    final color = brightness == Brightness.light
-        ? textPrimaryLight
-        : textPrimaryDark;
-
-    return GoogleFonts.nunitoTextTheme().copyWith(
-      displayLarge: GoogleFonts.nunito(
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: color,
-      ),
-      displayMedium: GoogleFonts.nunito(
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-        color: color,
-      ),
-      displaySmall: GoogleFonts.nunito(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: color,
-      ),
-      headlineMedium: GoogleFonts.nunito(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      headlineSmall: GoogleFonts.nunito(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      titleLarge: GoogleFonts.nunito(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      bodyLarge: GoogleFonts.nunito(
-        fontSize: 16,
-        fontWeight: FontWeight.normal,
-        color: color,
-        height: 1.6,
-      ),
-      bodyMedium: GoogleFonts.nunito(
-        fontSize: 14,
-        fontWeight: FontWeight.normal,
-        color: color,
-        height: 1.5,
-      ),
-      labelLarge: GoogleFonts.nunito(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-    );
+  /// Returns a Google Fonts text style appropriate for the given language --
+  /// Noto Sans Ethiopic (covers the Ge'ez script used by Amharic) or Nunito
+  /// for Latin script. Centralizing this means every screen automatically
+  /// gets correctly-shaped Amharic glyphs instead of relying on a bundled
+  /// font family that may not exist on the device.
+  static TextStyle _font(
+    bool isAmharic, {
+    required double fontSize,
+    FontWeight fontWeight = FontWeight.normal,
+    Color? color,
+    double? height,
+  }) {
+    return isAmharic
+        ? GoogleFonts.notoSansEthiopic(
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            color: color,
+            height: height,
+          )
+        : GoogleFonts.nunito(
+            fontSize: fontSize,
+            fontWeight: fontWeight,
+            color: color,
+            height: height,
+          );
   }
 
-  static TextTheme _buildAmharicTextTheme(Brightness brightness) {
+  static TextTheme _buildTextTheme(Brightness brightness, bool isAmharic) {
     final color = brightness == Brightness.light
         ? textPrimaryLight
         : textPrimaryDark;
 
-    return TextTheme(
-      displayLarge: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 32,
-        fontWeight: FontWeight.bold,
-        color: color,
-      ),
-      displayMedium: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 28,
-        fontWeight: FontWeight.bold,
-        color: color,
-      ),
-      displaySmall: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: color,
-      ),
-      headlineMedium: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      headlineSmall: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      titleLarge: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
-      bodyLarge: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 16,
-        fontWeight: FontWeight.normal,
-        color: color,
-        height: 1.6,
-      ),
-      bodyMedium: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 14,
-        fontWeight: FontWeight.normal,
-        color: color,
-        height: 1.5,
-      ),
-      labelLarge: TextStyle(
-        fontFamily: 'NotoSansEthiopic',
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
+    final base = isAmharic
+        ? GoogleFonts.notoSansEthiopicTextTheme()
+        : GoogleFonts.nunitoTextTheme();
+
+    return base.copyWith(
+      displayLarge: _font(isAmharic, fontSize: 32, fontWeight: FontWeight.bold, color: color),
+      displayMedium: _font(isAmharic, fontSize: 28, fontWeight: FontWeight.bold, color: color),
+      displaySmall: _font(isAmharic, fontSize: 24, fontWeight: FontWeight.bold, color: color),
+      headlineMedium: _font(isAmharic, fontSize: 20, fontWeight: FontWeight.w600, color: color),
+      headlineSmall: _font(isAmharic, fontSize: 18, fontWeight: FontWeight.w600, color: color),
+      titleLarge: _font(isAmharic, fontSize: 16, fontWeight: FontWeight.w600, color: color),
+      bodyLarge: _font(isAmharic, fontSize: 16, color: color, height: 1.6),
+      bodyMedium: _font(isAmharic, fontSize: 14, color: color, height: 1.5),
+      labelLarge: _font(isAmharic, fontSize: 14, fontWeight: FontWeight.w600, color: color),
     );
   }
 
@@ -341,21 +252,9 @@ class AppTheme {
         end: Alignment.bottomRight,
       );
 
-  // Get book color by name
-  static Color getBookColor(String bookEn) {
-    switch (bookEn.toLowerCase()) {
-      case 'genesis':
-        return genesisColor;
-      case 'exodus':
-        return exodusColor;
-      case 'leviticus':
-        return leviticusColor;
-      case 'numbers':
-        return numbersColor;
-      default:
-        return primaryColor;
-    }
-  }
+  // Get book color by name. Delegates to BookConfig so every book (not just
+  // the original 4) gets a consistent, distinct color.
+  static Color getBookColor(String bookEn) => BookConfig.colorFor(bookEn);
 
   // Border radius constants
   static const double radiusSmall = 8;

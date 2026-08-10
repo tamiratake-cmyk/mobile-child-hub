@@ -43,6 +43,14 @@ class Story extends HiveObject {
   @HiveField(12)
   final String summaryAm;
 
+  /// Scrambled-able plot beats used by the Story Sequence mini-game.
+  /// Stored in correct chronological order; the game shuffles them.
+  @HiveField(13)
+  final List<String> sequenceEventsEn;
+
+  @HiveField(14)
+  final List<String> sequenceEventsAm;
+
   Story({
     required this.id,
     required this.titleEn,
@@ -57,10 +65,15 @@ class Story extends HiveObject {
     required this.verseReferences,
     required this.summaryEn,
     required this.summaryAm,
+    this.sequenceEventsEn = const [],
+    this.sequenceEventsAm = const [],
   });
 
   String getTitle(String locale) => locale == 'am' ? titleAm : titleEn;
   String getContent(String locale) => locale == 'am' ? contentAm : contentEn;
   String getBook(String locale) => locale == 'am' ? bookAm : bookEn;
   String getSummary(String locale) => locale == 'am' ? summaryAm : summaryEn;
+  List<String> getSequenceEvents(String locale) =>
+      locale == 'am' ? sequenceEventsAm : sequenceEventsEn;
+  bool get hasSequenceGame => sequenceEventsEn.length >= 3;
 }

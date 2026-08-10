@@ -26,13 +26,15 @@ class UserProgressAdapter extends TypeAdapter<UserProgress> {
       favoriteStories: (fields[6] as List?)?.cast<String>(),
       totalStoriesRead: fields[7] as int,
       totalQuizzesCompleted: fields[8] as int,
+      passedQuizzes: (fields[9] as List?)?.cast<String>(),
+      completedGames: (fields[10] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProgress obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.totalPoints)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class UserProgressAdapter extends TypeAdapter<UserProgress> {
       ..writeByte(7)
       ..write(obj.totalStoriesRead)
       ..writeByte(8)
-      ..write(obj.totalQuizzesCompleted);
+      ..write(obj.totalQuizzesCompleted)
+      ..writeByte(9)
+      ..write(obj.passedQuizzes)
+      ..writeByte(10)
+      ..write(obj.completedGames);
   }
 
   @override

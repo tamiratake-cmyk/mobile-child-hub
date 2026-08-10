@@ -31,6 +31,16 @@ class UserProgress extends HiveObject {
   @HiveField(8)
   int totalQuizzesCompleted;
 
+  /// Story ids whose quiz was passed at or above [passThresholdPercent].
+  /// Passing a story's quiz unlocks the next story in its book and that
+  /// story's Sequence mini-game.
+  @HiveField(9)
+  List<String> passedQuizzes;
+
+  /// Story ids whose Sequence (timeline) mini-game has been completed.
+  @HiveField(10)
+  List<String> completedGames;
+
   UserProgress({
     this.totalPoints = 0,
     List<String>? completedStories,
@@ -41,11 +51,19 @@ class UserProgress extends HiveObject {
     List<String>? favoriteStories,
     this.totalStoriesRead = 0,
     this.totalQuizzesCompleted = 0,
+    List<String>? passedQuizzes,
+    List<String>? completedGames,
   })  : completedStories = completedStories ?? [],
         earnedBadges = earnedBadges ?? [],
         lastActiveDate = lastActiveDate ?? DateTime.now(),
         quizScores = quizScores ?? {},
-        favoriteStories = favoriteStories ?? [];
+        favoriteStories = favoriteStories ?? [],
+        passedQuizzes = passedQuizzes ?? [],
+        completedGames = completedGames ?? [];
+
+  /// Minimum score percentage required to pass a quiz and unlock the next
+  /// story + that story's mini-game.
+  static const int passThresholdPercent = 70;
 
   void addPoints(int points) {
     totalPoints += points;
@@ -61,6 +79,23 @@ class UserProgress extends HiveObject {
   void recordQuizScore(String storyId, int score) {
     quizScores[storyId] = score;
     totalQuizzesCompleted++;
+  }
+
+  /// Marks [storyId]'s quiz as passed if [percentage] clears the threshold.
+  /// Returns true if this call newly unlocked the next content.
+  bool passQuizIfEligible(String storyId, int percentage) {
+    if (percentage < passThresholdPercent) return false;
+    if (passedQuizzes.contains(storyId)) return false;
+    passedQuizzes.add(storyId);
+    return true;
+  }
+
+  bool hasPassedQuiz(String storyId) => passedQuizzes.contains(storyId);
+
+  void completeGame(String storyId) {
+    if (!completedGames.contains(storyId)) {
+      completedGames.add(storyId);
+    }
   }
 
   void updateStreak() {

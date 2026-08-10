@@ -7,6 +7,7 @@ import '../../data/models/story.dart';
 import '../blocs/settings_bloc.dart';
 import '../blocs/progress_bloc.dart';
 import '../blocs/quiz_bloc.dart';
+import 'story_sequence_game_screen.dart';
 
 class QuizScreen extends StatefulWidget {
   final Story story;
@@ -296,7 +297,29 @@ class _QuizScreenState extends State<QuizScreen> {
                     color: color,
                   ),
             ).animate().fadeIn(delay: 700.ms),
-            const SizedBox(height: 48),
+            const SizedBox(height: 32),
+            if (percentage >= 70 && widget.story.hasSequenceGame)
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => StorySequenceGameScreen(story: widget.story),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.goldColor,
+                  foregroundColor: Colors.black87,
+                  minimumSize: const Size(double.infinity, 56),
+                ),
+                icon: const Icon(Icons.sports_esports_rounded),
+                label: Text(
+                  isAm ? '🎮 አሁን የታሪክ ጨዋታ ተጫወት!' : '🎮 Unlocked! Play the Story Game',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ).animate().fadeIn(delay: 750.ms).shimmer(delay: 1200.ms, duration: 1200.ms),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
