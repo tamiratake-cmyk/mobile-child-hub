@@ -41,6 +41,10 @@ class UserProgress extends HiveObject {
   @HiveField(10)
   List<String> completedGames;
 
+  /// Book names (bookEn) whose Memory Match mini-game has been completed.
+  @HiveField(11)
+  List<String> completedMemoryGames;
+
   UserProgress({
     this.totalPoints = 0,
     List<String>? completedStories,
@@ -53,13 +57,15 @@ class UserProgress extends HiveObject {
     this.totalQuizzesCompleted = 0,
     List<String>? passedQuizzes,
     List<String>? completedGames,
+    List<String>? completedMemoryGames,
   })  : completedStories = completedStories ?? [],
         earnedBadges = earnedBadges ?? [],
         lastActiveDate = lastActiveDate ?? DateTime.now(),
         quizScores = quizScores ?? {},
         favoriteStories = favoriteStories ?? [],
         passedQuizzes = passedQuizzes ?? [],
-        completedGames = completedGames ?? [];
+        completedGames = completedGames ?? [],
+        completedMemoryGames = completedMemoryGames ?? [];
 
   /// Minimum score percentage required to pass a quiz and unlock the next
   /// story + that story's mini-game.
@@ -97,6 +103,14 @@ class UserProgress extends HiveObject {
       completedGames.add(storyId);
     }
   }
+
+  void completeMemoryGame(String bookEn) {
+    if (!completedMemoryGames.contains(bookEn)) {
+      completedMemoryGames.add(bookEn);
+    }
+  }
+
+  bool hasCompletedMemoryGame(String bookEn) => completedMemoryGames.contains(bookEn);
 
   void updateStreak() {
     final now = DateTime.now();

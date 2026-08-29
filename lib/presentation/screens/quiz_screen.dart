@@ -319,6 +319,19 @@ class _QuizScreenState extends State<QuizScreen> {
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ).animate().fadeIn(delay: 750.ms).shimmer(delay: 1200.ms, duration: 1200.ms),
+            if (percentage >= 70 && widget.story.hasSequenceGame)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(
+                  isAm
+                      ? 'ይህን ጨዋታ ከጨዋታዎች ትር ውስጥ ኋላም ማግኘት ይችላሉ'
+                      : 'You can also find this later in the Games tab',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).textTheme.bodySmall?.color?.withValues(alpha: 0.6),
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+              ).animate().fadeIn(delay: 1000.ms),
             const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

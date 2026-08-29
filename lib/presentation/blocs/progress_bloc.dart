@@ -62,6 +62,13 @@ class CompleteGame extends ProgressEvent {
   List<Object?> get props => [storyId];
 }
 
+class CompleteMemoryGame extends ProgressEvent {
+  final String bookEn;
+  const CompleteMemoryGame(this.bookEn);
+  @override
+  List<Object?> get props => [bookEn];
+}
+
 // State
 class ProgressState extends Equatable {
   final UserProgress progress;
@@ -125,6 +132,7 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
     on<UpdateStreak>(_onUpdateStreak);
     on<EarnBadge>(_onEarnBadge);
     on<CompleteGame>(_onCompleteGame);
+    on<CompleteMemoryGame>(_onCompleteMemoryGame);
   }
 
   Future<void> _onLoadProgress(
@@ -198,6 +206,21 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
 
     progress.completeGame(event.storyId);
     progress.addPoints(25);
+    await HiveService.saveProgress(progress);
+    emit(state.copyWith(progress: progress));
+
+    _checkBadges(emit);
+  }
+
+  Future<void> _onCompleteMemoryGame(
+    CompleteMemoryGame event,
+    Emitter<ProgressState> emit,
+  ) async {
+    final progress = state.progress;
+    if (progress.hasCompletedMemoryGame(event.bookEn)) return;
+
+    progress.completeMemoryGame(event.bookEn);
+    progress.addPoints(20);
     await HiveService.saveProgress(progress);
     emit(state.copyWith(progress: progress));
 
@@ -328,6 +351,24 @@ class ProgressBloc extends Bloc<ProgressEvent, ProgressState> {
     if (progress.completedGames.length >= 10 &&
         !progress.earnedBadges.contains('sequence_master')) {
       add(const EarnBadge('sequence_master'));
+    }
+
+    // Memory Match badges
+    if (progress.completedMemoryGames.isNotEmpty &&
+        !progress.earnedBadges.contains('memory_starter')) {
+      add(const EarnBadge('memory_starter'));
+    }
+
+    if (progress.completedMemoryGames.length >= 5 &&
+        !progress.earnedBadges.contains('memory_master')) {
+      add(const EarnBadge('memory_master'));
+    }
+
+    // Played both game types at least once.
+    if (progress.completedGames.isNotEmpty &&
+        progress.completedMemoryGames.isNotEmpty &&
+        !progress.earnedBadges.contains('game_explorer')) {
+      add(const EarnBadge('game_explorer'));
     }
 
     // Testament-completion badges

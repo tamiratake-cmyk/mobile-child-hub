@@ -6,11 +6,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/constants/book_config.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/game_unlocks.dart';
+import '../../core/utils/next_up.dart';
 import '../../data/models/story.dart';
+import '../../data/models/user_progress.dart';
 import '../blocs/settings_bloc.dart';
 import '../blocs/stories_bloc.dart';
 import '../blocs/progress_bloc.dart';
+import '../widgets/story_scene.dart';
+import 'book_memory_game_screen.dart';
+import 'games_hub_screen.dart';
+import 'quiz_screen.dart';
 import 'story_list_screen.dart';
+import 'story_reader_screen.dart';
+import 'story_sequence_game_screen.dart';
 import 'progress_screen.dart';
 import 'settings_screen.dart';
 
@@ -32,9 +41,9 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           _HomeContent(),
           QuizPage(),
+          const GamesHubScreen(),
           FavoriteStories(),
           ProgressScreen(),
-          // SettingsScreen(),
         ],
       ),
       bottomNavigationBar: _buildBottomNav(context),
@@ -70,7 +79,12 @@ class _HomeScreenState extends State<HomeScreen> {
               icon: const Icon(Icons.quiz_sharp),
               label: isAm ? 'ሙከራዎች' : 'Quizzes',
             ),
-            
+
+            BottomNavigationBarItem(
+              icon: const Icon(Icons.sports_esports_rounded),
+              label: isAm ? 'ጨዋታዎች' : 'Games',
+            ),
+
             BottomNavigationBarItem(
                 icon: const Icon( Icons.favorite_border_rounded),
                 label: isAm ? 'የተወደዱ' : "Favorites",
@@ -160,7 +174,8 @@ class _HomeContent extends StatelessWidget {
             ),
           ),
 
-      
+      _ContinueAndGamesSection(isAm: isAm),
+
       BlocBuilder<DailyVerseBloc, DailyVerseState>(
         builder: (context, state) {
           if (state is DailyVerseLoading) {
@@ -229,108 +244,7 @@ class _HomeContent extends StatelessWidget {
         },
       ),
           
-          //   SliverToBoxAdapter(
-          //   child: Padding(
-          //     padding: const EdgeInsets.symmetric(horizontal: 20),
-          //     child: Text(
-          //       isAm ? 'የተወደዱ ታሪኮች' : 'Favourite Stories',
-          //       style: Theme.of(context).textTheme.headlineMedium,
-          //     ),
-          //   ),
-          // ),
           const SliverToBoxAdapter(child: SizedBox(height: 16)),
-          // Favourite Stories
-          // BlocBuilder<ProgressBloc, ProgressState>(
-          //   builder: (context, state) {
-          //     final isAm = settings.languageCode == 'am';
-
-          //     final favoriteStories = state.progress.favoriteStories.isEmpty ? [] : context.read<StoriesBloc>().state.allStories.where((story) =>
-          //         state.progress.favoriteStories.contains(story.id)).toList();
-
-          //     if (favoriteStories.isEmpty) {
-          //       return SliverToBoxAdapter(
-          //         child: Padding(
-          //           padding: const EdgeInsets.symmetric(horizontal: 20),
-          //           child: Text(
-          //             isAm ? 'ምንም የተወደደ ታሪክ የለም' : 'No favourite stories yet',
-          //             style: Theme.of(context).textTheme.bodyLarge,
-          //           ),
-          //         ),
-          //       );
-          //     }
-
-          //     return SliverPadding(
-          //       padding: const EdgeInsets.symmetric(horizontal: 20),
-          //       sliver: SliverGrid(
-          //         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          //           crossAxisCount: 4,
-          //           mainAxisSpacing: 8,
-          //           crossAxisSpacing: 8,
-          //           childAspectRatio: 0.85,
-          //         ),
-          //         delegate: SliverChildBuilderDelegate(
-          //           (context, index) {
-          //             final story = favoriteStories[index];
-          //             return Padding(
-          //               padding: const EdgeInsets.only(bottom: 10),
-          //               child: GestureDetector(
-          //                 onTap: () {
-          //                   Navigator.push(
-          //                     context,
-          //                     MaterialPageRoute(
-          //                       builder: (_) => StoryListScreen(bookEn: story.bookEn, bookAm: story.bookAm),
-          //                     ),
-          //                   );
-          //                 },
-          //                 child: Column(
-          //                   crossAxisAlignment: CrossAxisAlignment.start,
-          //                   children: [
-          //                     // Expanded(
-          //                     //   child: Container(
-          //                     //     decoration: BoxDecoration(
-          //                     //       color: AppTheme.primaryColor.withValues(alpha: 0.1),
-          //                     //       borderRadius: BorderRadius.circular(20),
-          //                     //     ),
-          //                     //     child: Center(
-          //                     //       child: Icon(
-          //                     //         Icons.auto_stories_rounded,
-          //                     //         color: AppTheme.primaryColor,
-          //                     //         size: 40,
-          //                     //       ),
-          //                     //     ),
-          //                     //   ),
-          //                     // ),
-          //                     // const SizedBox(height: 8),
-          //                     Expanded(child: 
-          //                     Container(
-          //                       decoration: BoxDecoration(
-          //                         color: AppTheme.primaryColor.withValues(alpha: 0.1),
-          //                         borderRadius: BorderRadius.circular(50),
-          //                       ),
-          //                       child: Center(
-          //                         child: Text(
-          //                           isAm ? story.titleAm : story.titleEn,
-          //                           maxLines: 1,
-          //                           overflow: TextOverflow.fade,
-          //                           style: Theme.of(context).textTheme.titleSmall,
-          //                         ),
-                                  
-          //                       ),
-                              
-          //                     )
-          //                     )
-                             
-          //                   ],
-          //                 ),
-          //               ),
-          //             );
-          //           },
-          //           childCount: favoriteStories.length,
-          //         ),
-          //       ),
-          //     );
-          //   },
-          // ),
           // Books, grouped by testament
           BlocBuilder<StoriesBloc, StoriesState>(
             builder: (context, state) {
@@ -339,40 +253,59 @@ class _HomeContent extends StatelessWidget {
                   child: Center(child: CircularProgressIndicator()),
                 );
               }
-              final present = state.allStories.map((s) => s.bookEn).toSet();
-              final oldTestament = BookConfig.ordered
-                  .where((b) => b.testament == Testament.old && present.contains(b.nameEn))
-                  .toList();
-              final newTestament = BookConfig.ordered
-                  .where((b) => b.testament == Testament.newTestament && present.contains(b.nameEn))
-                  .toList();
+              return BlocBuilder<ProgressBloc, ProgressState>(
+                builder: (context, progressState) {
+                  final progress = progressState.progress;
+                  final nextUp = computeNextUp(state.allStories, progress);
 
-              return SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (oldTestament.isNotEmpty) ...[
-                        Text(
-                          isAm ? 'ብሉይ ኪዳን' : 'Old Testament',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                        const SizedBox(height: 16),
-                        _BookGrid(books: oldTestament, allStories: state.allStories, isAm: isAm),
-                        const SizedBox(height: 32),
-                      ],
-                      if (newTestament.isNotEmpty) ...[
-                        Text(
-                          isAm ? 'አዲስ ኪዳን' : 'New Testament',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                        const SizedBox(height: 16),
-                        _BookGrid(books: newTestament, allStories: state.allStories, isAm: isAm),
-                      ],
-                    ],
-                  ),
-                ),
+                  final present = state.allStories.map((s) => s.bookEn).toSet();
+                  final oldTestament = BookConfig.ordered
+                      .where((b) => b.testament == Testament.old && present.contains(b.nameEn))
+                      .toList();
+                  final newTestament = BookConfig.ordered
+                      .where((b) => b.testament == Testament.newTestament && present.contains(b.nameEn))
+                      .toList();
+
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (oldTestament.isNotEmpty) ...[
+                            Text(
+                              isAm ? 'ብሉይ ኪዳን' : 'Old Testament',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                            const SizedBox(height: 16),
+                            _BookGrid(
+                              books: oldTestament,
+                              allStories: state.allStories,
+                              progress: progress,
+                              nextUpBookEn: nextUp?.bookEn,
+                              isAm: isAm,
+                            ),
+                            const SizedBox(height: 32),
+                          ],
+                          if (newTestament.isNotEmpty) ...[
+                            Text(
+                              isAm ? 'አዲስ ኪዳን' : 'New Testament',
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                            const SizedBox(height: 16),
+                            _BookGrid(
+                              books: newTestament,
+                              allStories: state.allStories,
+                              progress: progress,
+                              nextUpBookEn: nextUp?.bookEn,
+                              isAm: isAm,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                  );
+                },
               );
             },
           ),
@@ -428,11 +361,15 @@ class _HomeContent extends StatelessWidget {
 class _BookGrid extends StatelessWidget {
   final List<BookInfo> books;
   final List<Story> allStories;
+  final UserProgress progress;
+  final String? nextUpBookEn;
   final bool isAm;
 
   const _BookGrid({
     required this.books,
     required this.allStories,
+    required this.progress,
+    required this.nextUpBookEn,
     required this.isAm,
   });
 
@@ -450,8 +387,15 @@ class _BookGrid extends StatelessWidget {
       itemCount: books.length,
       itemBuilder: (context, index) {
         final book = books[index];
-        final storyCount = allStories.where((s) => s.bookEn == book.nameEn).length;
-        return _BookCard(book: book, storyCount: storyCount, delay: index * 80);
+        final storiesInBook = allStories.where((s) => s.bookEn == book.nameEn).toList();
+        final readCount = storiesInBook.where((s) => progress.completedStories.contains(s.id)).length;
+        return _BookCard(
+          book: book,
+          storyCount: storiesInBook.length,
+          readCount: readCount,
+          isNextUp: book.nameEn == nextUpBookEn,
+          delay: index * 80,
+        );
       },
     );
   }
@@ -460,11 +404,15 @@ class _BookGrid extends StatelessWidget {
 class _BookCard extends StatelessWidget {
   final BookInfo book;
   final int storyCount;
+  final int readCount;
+  final bool isNextUp;
   final int delay;
 
   const _BookCard({
     required this.book,
     required this.storyCount,
+    required this.readCount,
+    required this.isNextUp,
     required this.delay,
   });
 
@@ -473,6 +421,7 @@ class _BookCard extends StatelessWidget {
     final settings = context.watch<SettingsBloc>().state;
     final isAm = settings.languageCode == 'am';
     final title = isAm ? book.nameAm : book.nameEn;
+    final progressValue = storyCount == 0 ? 0.0 : readCount / storyCount;
 
     return GestureDetector(
       onTap: () {
@@ -491,10 +440,11 @@ class _BookCard extends StatelessWidget {
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(24),
+          border: isNextUp ? Border.all(color: Colors.white, width: 3) : null,
           boxShadow: [
             BoxShadow(
-              color: book.color.withValues(alpha: 0.4),
-              blurRadius: 15,
+              color: book.color.withValues(alpha: isNextUp ? 0.65 : 0.4),
+              blurRadius: isNextUp ? 24 : 15,
               offset: const Offset(0, 8),
             ),
           ],
@@ -509,6 +459,30 @@ class _BookCard extends StatelessWidget {
                 book.icon,
                 size: 100,
                 color: Colors.white.withValues(alpha: 0.2),
+              ),
+            ),
+            // Progress ring
+            Positioned(
+              top: 16,
+              right: 16,
+              child: SizedBox(
+                width: 40,
+                height: 40,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      value: progressValue,
+                      strokeWidth: 3.5,
+                      backgroundColor: Colors.white.withValues(alpha: 0.25),
+                      valueColor: const AlwaysStoppedAnimation(Colors.white),
+                    ),
+                    Text(
+                      '$readCount/$storyCount',
+                      style: const TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
             ),
             // Content
@@ -542,6 +516,22 @@ class _BookCard extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
+                  if (isNextUp) ...[
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.9),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        isAm ? '▶ ይቀጥሉ' : '▶ Continue',
+                        style: TextStyle(color: book.color, fontSize: 11, fontWeight: FontWeight.bold),
+                      ),
+                    )
+                        .animate(onPlay: (c) => c.repeat(reverse: true))
+                        .scale(begin: const Offset(1, 1), end: const Offset(1.06, 1.06), duration: 900.ms),
+                  ],
                 ],
               ),
             ),
@@ -552,5 +542,221 @@ class _BookCard extends StatelessWidget {
           begin: const Offset(0.8, 0.8),
           delay: Duration(milliseconds: delay),
         );
+  }
+}
+
+/// Home hero: "Continue Your Adventure" card (driven by [computeNextUp]) plus
+/// a conditional "games waiting for you" banner -- the two surfaces that fix
+/// the original complaint of games being reachable only once, transiently,
+/// from the quiz-results screen.
+class _ContinueAndGamesSection extends StatelessWidget {
+  final bool isAm;
+
+  const _ContinueAndGamesSection({required this.isAm});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StoriesBloc, StoriesState>(
+      builder: (context, storiesState) {
+        if (storiesState.isLoading) return const SliverToBoxAdapter();
+        return BlocBuilder<ProgressBloc, ProgressState>(
+          builder: (context, progressState) {
+            final allStories = storiesState.allStories;
+            final progress = progressState.progress;
+            final nextUp = computeNextUp(allStories, progress);
+
+            final byBook = <String, List<Story>>{};
+            for (final s in allStories) {
+              byBook.putIfAbsent(s.bookEn, () => []).add(s);
+            }
+            var waitingCount = 0;
+            for (final s in allStories) {
+              if (isSequenceGameUnlocked(s, progress) && !isSequenceGamePlayed(s, progress)) waitingCount++;
+            }
+            for (final book in BookConfig.ordered) {
+              final storiesInBook = byBook[book.nameEn];
+              if (storiesInBook == null) continue;
+              if (isMemoryMatchUnlocked(storiesInBook, progress) && !isMemoryMatchPlayed(book.nameEn, progress)) {
+                waitingCount++;
+              }
+            }
+
+            return SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  children: [
+                    _ContinueAdventureCard(nextUp: nextUp, isAm: isAm),
+                    if (waitingCount > 0) ...[
+                      const SizedBox(height: 12),
+                      _GamesWaitingBanner(count: waitingCount, isAm: isAm),
+                    ],
+                    const SizedBox(height: 16),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _ContinueAdventureCard extends StatelessWidget {
+  final NextUpResult? nextUp;
+  final bool isAm;
+
+  const _ContinueAdventureCard({required this.nextUp, required this.isAm});
+
+  @override
+  Widget build(BuildContext context) {
+    final result = nextUp;
+    if (result == null) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(gradient: AppTheme.primaryGradient, borderRadius: BorderRadius.circular(24)),
+        child: Row(
+          children: [
+            const Icon(Icons.celebration_rounded, color: Colors.white, size: 36),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                isAm ? 'መላውን መጽሐፍ ቅዱስ አስሰዋል! 🎉' : 'You\'ve explored the whole Bible! 🎉',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+          ],
+        ),
+      ).animate().fadeIn();
+    }
+
+    final title = isAm ? 'ጉዞዎን ይቀጥሉ' : 'Continue Your Adventure';
+    late final String subtitle;
+    late final String ctaLabel;
+    late final IconData ctaIcon;
+    late final VoidCallback onTap;
+
+    switch (result.type) {
+      case NextActionType.readStory:
+        final story = result.story!;
+        subtitle = story.getTitle(isAm ? 'am' : 'en');
+        ctaLabel = isAm ? '📖 አንብብ' : '📖 Read Now';
+        ctaIcon = Icons.auto_stories_rounded;
+        onTap = () => Navigator.push(context, MaterialPageRoute(builder: (_) => StoryReaderScreen(story: story)));
+      case NextActionType.takeQuiz:
+        final story = result.story!;
+        subtitle = story.getTitle(isAm ? 'am' : 'en');
+        ctaLabel = isAm ? '📝 ፈተና ውሰድ' : '📝 Take the Quiz';
+        ctaIcon = Icons.quiz_rounded;
+        onTap = () => Navigator.push(context, MaterialPageRoute(builder: (_) => QuizScreen(story: story)));
+      case NextActionType.playSequenceGame:
+        final story = result.story!;
+        subtitle = story.getTitle(isAm ? 'am' : 'en');
+        ctaLabel = isAm ? '🎮 ተጫወት' : '🎮 Play the Game';
+        ctaIcon = Icons.sports_esports_rounded;
+        onTap = () =>
+            Navigator.push(context, MaterialPageRoute(builder: (_) => StorySequenceGameScreen(story: story)));
+      case NextActionType.playMemoryMatch:
+        subtitle = isAm ? result.bookAm : result.bookEn;
+        ctaLabel = isAm ? '🧠 የማስታወስ ጨዋታ' : '🧠 Memory Match';
+        ctaIcon = Icons.grid_view_rounded;
+        onTap = () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => BookMemoryGameScreen(bookEn: result.bookEn, bookAm: result.bookAm)),
+            );
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: AppTheme.primaryGradient,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(color: AppTheme.primaryColor.withValues(alpha: 0.35), blurRadius: 16, offset: const Offset(0, 8)),
+        ],
+      ),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 64,
+            height: 64,
+            child: StoryScene(
+              bookEn: result.bookEn,
+              storyId: result.story?.id,
+              compact: true,
+              borderRadius: BorderRadius.circular(16),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          ElevatedButton.icon(
+            onPressed: onTap,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: AppTheme.primaryColor,
+            ),
+            icon: Icon(ctaIcon, size: 18),
+            label: Text(ctaLabel, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+          ),
+        ],
+      ),
+    ).animate().fadeIn().slideY(begin: 0.1);
+  }
+}
+
+class _GamesWaitingBanner extends StatelessWidget {
+  final int count;
+  final bool isAm;
+
+  const _GamesWaitingBanner({required this.count, required this.isAm});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const GamesHubScreen())),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          gradient: AppTheme.warmGradient,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(color: AppTheme.secondaryColor.withValues(alpha: 0.3), blurRadius: 10, offset: const Offset(0, 4)),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(Icons.sports_esports_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                isAm ? '🎮 $count ጨዋታ(ዎች) እየጠበቁዎት ነው!' : '🎮 $count game(s) waiting for you!',
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 14),
+          ],
+        ),
+      ),
+    ).animate(onPlay: (c) => c.repeat()).shimmer(duration: 2200.ms, color: Colors.white.withValues(alpha: 0.3));
   }
 }
